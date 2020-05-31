@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_create"
+        android:title="Crear"
+        android:icon="@drawable/ic_create"></item>
+
+    <item android:id="@+id/menu_search"
+        android:title="Consultar"
+        android:icon="@drawable/ic_search"></item>
+
+    <item android:id="@+id/menu_configurar"
+        android:title="Opciones"
+        android:icon="@drawable/ic_settings"></item>
+
+</menu>
