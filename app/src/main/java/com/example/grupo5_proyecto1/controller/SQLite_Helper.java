@@ -1,9 +1,18 @@
 package com.example.grupo5_proyecto1.controller;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.grupo5_proyecto1.models.Articulo;
+import com.example.grupo5_proyecto1.models.CatalogoArticulo;
+import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 
 public class SQLite_Helper extends SQLiteOpenHelper {
@@ -13,31 +22,55 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     private String queryAsignacion="create table ASIGNACIONES" +
             "(" +
-            "   NODOCUMENTO          REAL not null," +
-            "   CODMOTIVOASGINACION  REAL," +
+            "   NODOCUMENTO          INTEGER primary key AUTOINCREMENT," +
+            "   CODMOTIVOASGINACION  INTEGER," +
             "   CODIGOARTICULO       varchar(10)," +
             "   DOCENTE              varchar(30)," +
             "   CODARTICULO          varchar(10)," +
             "   DESCRIPCION          varchar(30)," +
-            "   FECHAASIGNACION      TEXT," +
-            "   primary key (NODOCUMENTO)" +
+            "   FECHAASIGNACION      TEXT" +
             ");";
     private String queryAutores="create table AUTORES" +
             "(" +
             "   CODIGOARTICULO       varchar(10) not null," +
-            "   CORLN                numeric(8,0) not null," +
+            "   CORLN                REAL not null," +
             "   NOOMBRE              varchar(50)," +
             "   primary key (CODIGOARTICULO, CORLN)" +
             ");";
     private String queryCatalogoArticulo="create table CATALOGOARTICULO" +
             "(" +
-            "   CODTIPOARTICULO      REAL not null," +
+            "   CODTIPOARTICULO      varchar(10) not null," +
             "   DESCRIPCION          varchar(10)," +
             "   primary key (CODTIPOARTICULO)" +
             ");";
+
+
+    //Relacion asignacion - catalogoMotivoAsignacion
+    private String relacionCatalogoMotivoAsignacion="create table CATALOGOMOTIVOASIGNACION" +
+            "(" +
+            "   CODMOTIVOASGINACION  INTEGER primary key AUTOINCREMENT," +
+            "   DESCRIPCION          varchar(10)" +
+            ");";
+    //Relacion asignacion + catalogoArticulo con Articulo
+    private String relacionArticulo="create table ARTICULO" +
+            "(" +
+            "   CODIGOARTICULO       varchar(10) not null," +
+            "   CODTIPOARTICULO      varchar(10)," +
+            "   FECHAREGISTRO        TEXT," +
+            "   ESTADO               INTEGER," +
+            "   primary key (CODIGOARTICULO)" +
+            ");";
+
     private static String TABLA_ASIGNACIONES="ASIGNACIONES";
     private static String TABLA_AUTORES="AUTORES";
     private static String TABLA_CATALOGO_ARTICULO="CATALOGOARTICULO";
+    //Tabla relacion
+    private static String TABLA_CATALOGOMOTASIG="CATALOGOMOTIVOASIGNACION";
+    private static String TABLA_ARTICULO="ARTICULO";
+
+    //Columna relacion
+    private static String[] columna_cat_mot_asignacion={"CODMOTIVOASGINACION","DESCRIPCION"};
+    private static String[] columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
 
     private static String[] columna_asignacion={"NODOCUMENTO","CODMOTIVOASGINACION","CODIGOARTICULO","DOCENTE","CODARTICULO","DESCRIPCION","FECHAASIGNACION"};
     private static String[] columna_autores={"CODIGOARTICULO","CORLN","NOOMBRE"};
@@ -49,6 +82,9 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         db.execSQL(queryAsignacion);
         db.execSQL(queryAutores);
         db.execSQL(queryCatalogoArticulo);
+        //relacion con asignacion
+        db.execSQL(relacionCatalogoMotivoAsignacion);
+        db.execSQL(relacionArticulo);
 
     }
 
@@ -70,4 +106,108 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             e.printStackTrace(System.out);
         }
     }
+    public String llenarBaseDatos(){
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String resultado;
+        //Articulo
+        final String[] VArticuloCodigo={"AA01","BB02","CC03"};
+        final String[] VArticuloCodigoTipo={"ART1","ART1","ART2"};
+        final String[] VArticuloFecha={formatter.format(calendar.getTime()).toString(),formatter.format(calendar.getTime()).toString(),formatter.format(calendar.getTime()).toString()};
+        final int[] VArticuloEstado={1,1,1};
+
+        //private static String[] columna_catalogo_articul={"CODTIPOARTICULO","DESCRIPCION"};
+        //Catalogo Articulo
+        final String[] VCatalogoArticuloCodigo={"ART1","ART2","ART3"};
+        final String[] VACatalogoArticuloDescripcion={"Descripcion Articulo 1","Descripcion Articulo 2","Descripcion Articulo 3"};
+
+        //private static String[] columna_cat_mot_asignacion={"CODMOTIVOASGINACION","DESCRIPCION"};
+        //Categoria motivo asignacion
+        final String[] VCatMoviAsignacion={"Prestamo","Alquiler","Pedido"};
+
+        this.abrir();
+        this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_ARTICULO);
+        this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGO_ARTICULO);
+        this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGOMOTASIG);
+        Articulo articulo=new Articulo();
+        for(int i=0;i<3;i++){
+            articulo.setCodigoArticulo(VArticuloCodigo[i]);
+            articulo.setCodTipoArticulo(VArticuloCodigoTipo[i]);
+            articulo.setFecha(VArticuloFecha[i]);
+            articulo.setEstado(VArticuloEstado[i]);
+            this.insertar(articulo);
+        }
+        CatalogoArticulo catalogoArticulo=new CatalogoArticulo();
+        for(int i=0;i<3;i++){
+            catalogoArticulo.setCodTipoArticulo(VCatalogoArticuloCodigo[i]);
+            catalogoArticulo.setDescripcion(VACatalogoArticuloDescripcion[i]);
+            this.insertar(catalogoArticulo);
+        }
+        CatalogoMotivoAsignacion catalogoMotivoAsignacion=new CatalogoMotivoAsignacion();
+        for(int i=0;i<3;i++){
+            catalogoMotivoAsignacion.setDescripcion(VCatMoviAsignacion[i]);
+            this.insertar(catalogoMotivoAsignacion);
+        }
+        this.cerrar();
+        return resultado="Guardado correctamente";
+    }
+    public String insertar(Articulo articulo){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_articulo[0],articulo.getCodigoArticulo());
+            contentValues.put(columna_articulo[1],articulo.getCodTipoArticulo());
+            contentValues.put(columna_articulo[2],articulo.getFecha());
+            contentValues.put(columna_articulo[3],articulo.getEstado());
+            cont=this.getWritableDatabase().insert(TABLA_ARTICULO,null,contentValues);
+            if(cont==1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
+            }
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
+
+    public String insertar(CatalogoArticulo catalogoArticulo){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_catalogo_articul[0],catalogoArticulo.getCodTipoArticulo());
+            contentValues.put(columna_catalogo_articul[1],catalogoArticulo.getDescripcion());
+            cont=this.getWritableDatabase().insert(TABLA_CATALOGO_ARTICULO,null,contentValues);
+            if(cont==1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
+            }
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
+
+    public String insertar(CatalogoMotivoAsignacion catalogoMotivoAsignacion){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_cat_mot_asignacion[1],catalogoMotivoAsignacion.getDescripcion());
+            cont=this.getWritableDatabase().insert(TABLA_CATALOGOMOTASIG,null,contentValues);
+            if(cont==1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
+            }
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
+
+
 }

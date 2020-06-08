@@ -8,11 +8,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.grupo5_proyecto1.asignacion.AsignacionMainActivity;
+import com.example.grupo5_proyecto1.controller.SQLite_Helper;
+
+import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.BASE_DATOS;
+import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.VERSION;
 
 public class MainActivity extends AppCompatActivity {
     ListView lista;
+    SQLite_Helper helper=new SQLite_Helper(
+            this,
+            BASE_DATOS,
+            null,
+            VERSION
+    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
 
+                        break;
+                    case 4:
+                        String texto;
+                        texto=helper.llenarBaseDatos();
+                        Toast.makeText(getApplicationContext(),texto,Toast.LENGTH_LONG).show();
                         break;
                 }
             }
