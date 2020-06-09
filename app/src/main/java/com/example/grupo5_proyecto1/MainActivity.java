@@ -18,12 +18,7 @@ import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.VERSION
 
 public class MainActivity extends AppCompatActivity {
     ListView lista;
-    SQLite_Helper helper=new SQLite_Helper(
-            this,
-            BASE_DATOS,
-            null,
-            VERSION
-    );
+    SQLite_Helper helper=new SQLite_Helper(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

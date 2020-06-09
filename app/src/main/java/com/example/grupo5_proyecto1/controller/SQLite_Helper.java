@@ -2,6 +2,7 @@ package com.example.grupo5_proyecto1.controller;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,12 +13,16 @@ import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class SQLite_Helper extends SQLiteOpenHelper {
-    public SQLite_Helper(Context context,String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    private static  final String BASE_DATOS="mantto_libreria.s3db";
+    private static final int VERSION=1;
+    public SQLite_Helper(Context context) {
+        super(context, BASE_DATOS, null, VERSION);
     }
 
     private String queryAsignacion="create table ASIGNACIONES" +
@@ -207,6 +212,36 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             return  "Fallo al insert registro";
         }
         return  regIngresado;
+    }
+
+    public List<Articulo> obtenerArticulo(){
+        //columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
+        this.abrir();
+        List<Articulo>articulos=new ArrayList<>();
+        Cursor cursor=this.getReadableDatabase().query(TABLA_ARTICULO,columna_articulo,null,null,null,null,null);
+        while(cursor.moveToNext()){
+            Articulo articulo=new Articulo();
+            articulo.setCodigoArticulo(cursor.getString(0));
+            articulo.setCodTipoArticulo(cursor.getString(1));
+            articulo.setEstado(cursor.getInt(2));
+            articulo.setFecha(cursor.getString(3));
+            articulos.add(articulo);
+        }
+        this.cerrar();
+        return articulos;
+    }
+    public List<CatalogoMotivoAsignacion> obtenerCatalogoMotivoAsignacion(){
+        this.abrir();
+        List<CatalogoMotivoAsignacion>catalogoMotivoAsignacions=new ArrayList<>();
+        Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGOMOTASIG,columna_cat_mot_asignacion,null,null,null,null,null);
+        while(cursor.moveToNext()){
+            CatalogoMotivoAsignacion catalogoMotivoAsignacion=new CatalogoMotivoAsignacion();
+            catalogoMotivoAsignacion.setCodMotivoAsignacion(cursor.getInt(0));
+            catalogoMotivoAsignacion.setDescripcion(cursor.getString(1));
+            catalogoMotivoAsignacions.add(catalogoMotivoAsignacion);
+        }
+        this.cerrar();
+        return catalogoMotivoAsignacions;
     }
 
 
