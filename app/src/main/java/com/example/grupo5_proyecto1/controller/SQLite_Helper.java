@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.grupo5_proyecto1.models.Articulo;
+import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
 
@@ -242,6 +243,69 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
         this.cerrar();
         return catalogoMotivoAsignacions;
+    }
+
+    public String insertar(Asignacion asignacion){
+        //columna_asignacion={"NODOCUMENTO","CODMOTIVOASGINACION","CODIGOARTICULO","DOCENTE","CODARTICULO","DESCRIPCION","FECHAASIGNACION"};
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_asignacion[1],asignacion.getCodMotivoAsignacion());
+            contentValues.put(columna_asignacion[2],asignacion.getCodigoArticulo());
+            contentValues.put(columna_asignacion[3],asignacion.getDocente());
+            contentValues.put(columna_asignacion[4],asignacion.getCodigoArticulo());
+            contentValues.put(columna_asignacion[5],asignacion.getDescripcion());
+            contentValues.put(columna_asignacion[6],asignacion.getFechaAsignacion());
+            cont=this.getWritableDatabase().insert(TABLA_ASIGNACIONES,null,contentValues);
+            if(cont==1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
+            }
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
+
+    public int obtenerIdCodMotivoAsignacion(String motivo){
+        String consulta="SELECT "+columna_cat_mot_asignacion[0]+" FROM "+TABLA_CATALOGOMOTASIG;
+        int valor=0;
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGOMOTASIG,columna_cat_mot_asignacion,columna_cat_mot_asignacion[1]+"=?",null,null,null,null);
+            if(cursor.moveToFirst()){
+                valor=cursor.getInt(1);
+            }
+            this.close();
+        }catch(SQLException e){
+            e.printStackTrace(System.out);
+            valor=-1;
+        }
+        return valor;
+    }
+
+    public List<Asignacion> MostrarAsignaciones(){
+        //columna_asignacion={"NODOCUMENTO","CODMOTIVOASGINACION","CODIGOARTICULO","DOCENTE","CODARTICULO","DESCRIPCION","FECHAASIGNACION"};
+        List<Asignacion> listaAsignaciones=new ArrayList<>();
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_ASIGNACIONES,columna_asignacion,null,null,null,null,null);
+            while(cursor.moveToFirst()){
+                Asignacion asignacion=new Asignacion();
+                asignacion.setCodigoArticulo(cursor.getString(2));
+                asignacion.setCodMotivoAsignacion(cursor.getInt(1));
+                asignacion.setDocente(cursor.getString(3));
+                asignacion.setDescripcion(cursor.getString(5));
+                asignacion.setFechaAsignacion(cursor.getString(6));
+                listaAsignaciones.add(asignacion);
+            }
+            return listaAsignaciones;
+        }catch(SQLException e){
+            e.printStackTrace(System.out);
+            return null;
+        }
     }
 
 

@@ -16,14 +16,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.grupo5_proyecto1.R;
 import com.example.grupo5_proyecto1.asignacion.fragment.datepicker_fecha.DatePickerFragment;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
 import com.example.grupo5_proyecto1.models.Articulo;
+import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
 
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ public class CreateFragment extends Fragment {
     Toolbar toolbar;
     EditText txtDocente,txtdescripcion,txtfecha;
     SQLite_Helper helper;
+    Button btnGuardar;
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -98,6 +102,20 @@ public class CreateFragment extends Fragment {
                 obtenerListaMotivoAsignacion()
         );
         spinner2.setAdapter(arrayAdapterMotivo);
+        btnGuardar=(Button) getView().findViewById(R.id.btnGuardarAsignacion);
+        btnGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Asignacion asignacion=new Asignacion();
+                asignacion.setCodigoArticulo(spinner.getSelectedItem().toString());
+                asignacion.setCodMotivoAsignacion(helper.obtenerIdCodMotivoAsignacion(spinner2.getSelectedItem().toString()));
+                asignacion.setDescripcion(txtdescripcion.getText().toString());
+                asignacion.setDocente(txtDocente.getText().toString());
+                asignacion.setFechaAsignacion(txtfecha.getText().toString());
+                String progreso=helper.insertar(asignacion);
+                Toast.makeText(getView().getContext(),progreso,Toast.LENGTH_LONG).show();
+            }
+        });
 
 
     }
@@ -129,6 +147,7 @@ public class CreateFragment extends Fragment {
         }
         return list;
     }
+
 
 
 
