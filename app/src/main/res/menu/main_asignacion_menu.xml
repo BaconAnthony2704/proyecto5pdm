@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_search"></item>
 
     <item android:id="@+id/menu_configurar"
-        android:title="Opciones"
-        android:icon="@drawable/ic_settings"></item>
+        android:title="Autores"
+        android:icon="@drawable/ic_group"></item>
 
 </menu>

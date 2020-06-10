@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.grupo5_proyecto1.models.Articulo;
 import com.example.grupo5_proyecto1.models.Asignacion;
+import com.example.grupo5_proyecto1.models.Autores;
 import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
 
@@ -131,11 +132,18 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         //Categoria motivo asignacion
         final String[] VCatMoviAsignacion={"Prestamo","Alquiler","Pedido"};
 
+        //Autores
+        //columna_autores={"CODIGOARTICULO","CORLN","NOOMBRE"};
+        final String[] VAutoresCodigoArticulo={"AA01","AA01","BB02","BB02","CC03"};
+        final double[] VAutoresCorlin={300,250,450,230,500};
+        final String[] VAutoresNombre={"Antonio Salarrue","Manlio Argueta","Alfredo Espino","Garcia Lorca","Julio Verne"};
+
         this.abrir();
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_ARTICULO);
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGO_ARTICULO);
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGOMOTASIG);
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_ASIGNACIONES);
+        this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_AUTORES);
         Articulo articulo=new Articulo();
         for(int i=0;i<3;i++){
             articulo.setCodigoArticulo(VArticuloCodigo[i]);
@@ -155,8 +163,34 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             catalogoMotivoAsignacion.setDescripcion(VCatMoviAsignacion[i]);
             this.insertar(catalogoMotivoAsignacion);
         }
+        Autores autores=new Autores();
+        for(int i=0;i<5;i++){
+            autores.setCodigoArticulo(VAutoresCodigoArticulo[i]);
+            autores.setCorlin(VAutoresCorlin[i]);
+            autores.setNombre(VAutoresNombre[i]);
+            this.insertar(autores);
+        }
         this.cerrar();
         return resultado="Guardado correctamente";
+    }
+    public String insertar(Autores autores){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_autores[0],autores.getCodigoArticulo());
+            contentValues.put(columna_autores[1],autores.getCorlin());
+            contentValues.put(columna_autores[2],autores.getNombre());
+            cont=this.getWritableDatabase().insert(TABLA_AUTORES,null,contentValues);
+            if(cont==-1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
+            }
+        }catch (SQLException e){
+            return "Fallto al insertar registro";
+        }
+        return regIngresado;
     }
     public String insertar(Articulo articulo){
         String regIngresado="Registro ingresado No.";
@@ -168,7 +202,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             contentValues.put(columna_articulo[2],articulo.getFecha());
             contentValues.put(columna_articulo[3],articulo.getEstado());
             cont=this.getWritableDatabase().insert(TABLA_ARTICULO,null,contentValues);
-            if(cont==1 || cont==0){
+            if(cont==-1 || cont==0){
                 regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
             }else{
                 regIngresado+=cont;
@@ -187,7 +221,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             contentValues.put(columna_catalogo_articul[0],catalogoArticulo.getCodTipoArticulo());
             contentValues.put(columna_catalogo_articul[1],catalogoArticulo.getDescripcion());
             cont=this.getWritableDatabase().insert(TABLA_CATALOGO_ARTICULO,null,contentValues);
-            if(cont==1 || cont==0){
+            if(cont==-1 || cont==0){
                 regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
             }else{
                 regIngresado+=cont;
@@ -205,7 +239,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             ContentValues contentValues=new ContentValues();
             contentValues.put(columna_cat_mot_asignacion[1],catalogoMotivoAsignacion.getDescripcion());
             cont=this.getWritableDatabase().insert(TABLA_CATALOGOMOTASIG,null,contentValues);
-            if(cont==1 || cont==0){
+            if(cont==-1 || cont==0){
                 regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
             }else{
                 regIngresado+=cont;
@@ -334,17 +368,17 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     public Articulo obtenerArticulo(String idarticulo){
         //columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
         String[]id={idarticulo};
-        Articulo articulo;
+        //Articulo articulo;
         try{
             this.abrir();
             Cursor cursor=this.getReadableDatabase().query(TABLA_ARTICULO,columna_articulo,columna_articulo[0]+"=?",id,null,null,null);
             if(cursor.moveToFirst()){
-                articulo=new Articulo();
+                Articulo articulo=new Articulo();
                 articulo.setCodigoArticulo(cursor.getString(0));
                 articulo.setCodTipoArticulo(cursor.getString(1));
                 articulo.setFecha(cursor.getString(2));
                 articulo.setEstado(cursor.getInt(3));
-                this.cerrar();
+                //this.cerrar();
                 return articulo;
 
             }else{
@@ -380,6 +414,25 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }catch (SQLException e){
             e.printStackTrace(System.out);
             this.cerrar();
+            return null;
+        }
+    }
+
+    public List<Autores> obtenerAutores(){
+        List<Autores> autores=new ArrayList<>();
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_AUTORES,columna_autores,null,null,null,null,null);
+            while(cursor.moveToNext()){
+                Autores autores1=new Autores();
+                autores1.setCodigoArticulo(cursor.getString(0));
+                autores1.setCorlin(cursor.getDouble(1));
+                autores1.setNombre(cursor.getString(2));
+                autores.add(autores1);
+            }
+            return  autores;
+        }catch(SQLException e){
+            e.printStackTrace(System.out);
             return null;
         }
     }
