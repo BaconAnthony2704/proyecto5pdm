@@ -28,7 +28,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     private String queryAsignacion="create table ASIGNACIONES" +
             "(" +
-            "   NODOCUMENTO          INTEGER primary key AUTOINCREMENT," +
+            "   NODOCUMENTO          INTEGER primary key AUTOINCREMENT not null," +
             "   CODMOTIVOASGINACION  INTEGER," +
             "   CODIGOARTICULO       varchar(10)," +
             "   DOCENTE              varchar(30)," +
@@ -54,7 +54,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     //Relacion asignacion - catalogoMotivoAsignacion
     private String relacionCatalogoMotivoAsignacion="create table CATALOGOMOTIVOASIGNACION" +
             "(" +
-            "   CODMOTIVOASGINACION  INTEGER primary key AUTOINCREMENT," +
+            "   CODMOTIVOASGINACION  INTEGER primary key AUTOINCREMENT not null," +
             "   DESCRIPCION          varchar(10)" +
             ");";
     //Relacion asignacion + catalogoArticulo con Articulo
@@ -135,6 +135,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_ARTICULO);
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGO_ARTICULO);
         this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_CATALOGOMOTASIG);
+        this.getWritableDatabase().execSQL("DELETE FROM "+TABLA_ASIGNACIONES);
         Articulo articulo=new Articulo();
         for(int i=0;i<3;i++){
             articulo.setCodigoArticulo(VArticuloCodigo[i]);
@@ -271,17 +272,40 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     public int obtenerIdCodMotivoAsignacion(String motivo){
         String consulta="SELECT "+columna_cat_mot_asignacion[0]+" FROM "+TABLA_CATALOGOMOTASIG;
-        int valor=0;
+        String[] id={motivo};
+        int valor;
         try{
             this.abrir();
-            Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGOMOTASIG,columna_cat_mot_asignacion,columna_cat_mot_asignacion[1]+"=?",null,null,null,null);
+            Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGOMOTASIG,columna_cat_mot_asignacion,columna_cat_mot_asignacion[1]+"=?",id,null,null,null);
             if(cursor.moveToFirst()){
-                valor=cursor.getInt(1);
+                valor=cursor.getInt(0);
+            }else{
+                valor=0;
             }
             this.close();
         }catch(SQLException e){
             e.printStackTrace(System.out);
             valor=-1;
+        }
+        return valor;
+    }
+    public String obtenerMotivoAsignacion(int id){
+        String[] idmotivo={String.valueOf(id)};
+        String valor;
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGOMOTASIG,columna_cat_mot_asignacion,columna_cat_mot_asignacion[0]+"=?",idmotivo,null,null,null,null);
+            if(cursor.moveToFirst()){
+                valor=cursor.getString(1);
+            }else{
+                valor="No hay motivo";
+            }
+
+            this.close();
+        }catch(SQLException e){
+            e.printStackTrace(System.out);
+            valor="No se puede obtener el motivo";
+
         }
         return valor;
     }
@@ -292,7 +316,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         try{
             this.abrir();
             Cursor cursor=this.getReadableDatabase().query(TABLA_ASIGNACIONES,columna_asignacion,null,null,null,null,null);
-            while(cursor.moveToFirst()){
+            while(cursor.moveToNext()){
                 Asignacion asignacion=new Asignacion();
                 asignacion.setCodigoArticulo(cursor.getString(2));
                 asignacion.setCodMotivoAsignacion(cursor.getInt(1));

@@ -1,59 +1,74 @@
 package com.example.grupo5_proyecto1.asignacion.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
 
 import com.example.grupo5_proyecto1.R;
+import com.example.grupo5_proyecto1.controller.SQLite_Helper;
+import com.example.grupo5_proyecto1.models.Asignacion;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ConsultaFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class ConsultaFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    Toolbar toolbar;
+    ListView listView;
+    SQLite_Helper helper;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        helper=new SQLite_Helper(activity);
 
+    }
     public ConsultaFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ConsultaFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ConsultaFragment newInstance(String param1, String param2) {
-        ConsultaFragment fragment = new ConsultaFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        toolbar=(Toolbar) getView().findViewById(R.id.toolbar_consultar_asignacion);
+        listView=(ListView) getView().findViewById(R.id.listViewAsignacion);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
+        ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,
+                ListaAsignaciones());
+        listView.setAdapter(arrayAdapter);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private List<String> ListaAsignaciones() {
+        List<String> lista=new ArrayList<>();
+
+        List<Asignacion> lasignacion=new ArrayList<>();
+        lasignacion=helper.MostrarAsignaciones();
+        for(Asignacion a:lasignacion){
+            String asignacion="";
+            asignacion+="Fecha: "+a.getFechaAsignacion()+"\n"+
+                    "Motivo: "+helper.obtenerMotivoAsignacion(a.getCodMotivoAsignacion())+"\n"+
+                    "Articulo: "+a.getCodigoArticulo()+"\n"+
+                    "Descripcion: "+a.getDescripcion()+"\n"+
+                    "Docente:"+a.getDocente()+"\n";
+            lista.add(asignacion);
         }
+        return lista;
     }
 
     @Override
