@@ -331,6 +331,58 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             return null;
         }
     }
+    public Articulo obtenerArticulo(String idarticulo){
+        //columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
+        String[]id={idarticulo};
+        Articulo articulo;
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_ARTICULO,columna_articulo,columna_articulo[0]+"=?",id,null,null,null);
+            if(cursor.moveToFirst()){
+                articulo=new Articulo();
+                articulo.setCodigoArticulo(cursor.getString(0));
+                articulo.setCodTipoArticulo(cursor.getString(1));
+                articulo.setFecha(cursor.getString(2));
+                articulo.setEstado(cursor.getInt(3));
+                this.cerrar();
+                return articulo;
+
+            }else{
+                this.cerrar();
+                return null;
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace(System.out);
+            this.cerrar();
+            return null;
+
+        }
+    }
+
+    public CatalogoArticulo obtenerCatalogo(String idCatalogoArticulo){
+        //columna_catalogo_articul={"CODTIPOARTICULO","DESCRIPCION"};
+        String[] id={idCatalogoArticulo};
+        CatalogoArticulo catalogoArticulo;
+        try{
+            this.abrir();
+            Cursor cursor=this.getReadableDatabase().query(TABLA_CATALOGO_ARTICULO,columna_catalogo_articul,columna_catalogo_articul[0]+"=?",id,null,null,null);
+            if(cursor.moveToFirst()){
+                catalogoArticulo=new CatalogoArticulo();
+                catalogoArticulo.setCodTipoArticulo(cursor.getString(0));
+                catalogoArticulo.setDescripcion(cursor.getString(1));
+                this.cerrar();
+                return catalogoArticulo;
+            }else{
+                this.cerrar();
+                return null;
+            }
+        }catch (SQLException e){
+            e.printStackTrace(System.out);
+            this.cerrar();
+            return null;
+        }
+    }
 
 
 }

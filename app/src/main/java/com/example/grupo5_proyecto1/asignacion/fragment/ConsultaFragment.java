@@ -16,7 +16,9 @@ import android.widget.ListView;
 
 import com.example.grupo5_proyecto1.R;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
+import com.example.grupo5_proyecto1.models.Articulo;
 import com.example.grupo5_proyecto1.models.Asignacion;
+import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,16 +58,29 @@ public class ConsultaFragment extends Fragment {
 
     private List<String> ListaAsignaciones() {
         List<String> lista=new ArrayList<>();
-
+        Articulo articulo;
+        CatalogoArticulo catalogoArticulo;
         List<Asignacion> lasignacion=new ArrayList<>();
         lasignacion=helper.MostrarAsignaciones();
         for(Asignacion a:lasignacion){
+            articulo=helper.obtenerArticulo(a.getCodigoArticulo());
+            catalogoArticulo=helper.obtenerCatalogo(articulo.getCodTipoArticulo());
+            String estado;
+            if(articulo.getEstado()==1){
+                estado="Diponible";
+            }else{
+                estado="No disponible";
+            }
             String asignacion="";
-            asignacion+="Fecha: "+a.getFechaAsignacion()+"\n"+
-                    "Motivo: "+helper.obtenerMotivoAsignacion(a.getCodMotivoAsignacion())+"\n"+
-                    "Articulo: "+a.getCodigoArticulo()+"\n"+
-                    "Descripcion: "+a.getDescripcion()+"\n"+
-                    "Docente:"+a.getDocente()+"\n";
+            asignacion+="Fecha: ".toUpperCase()+a.getFechaAsignacion()+"\n"+
+                        "Motivo: ".toUpperCase()+helper.obtenerMotivoAsignacion(a.getCodMotivoAsignacion())+"\n"+
+                        "Codigo articulo: ".toUpperCase()+a.getCodigoArticulo()+"\n"+
+                        "Tipo articulo: ".toUpperCase()+articulo.getCodTipoArticulo()+"\n"+
+                        "Descripcion articulo: ".toUpperCase()+catalogoArticulo.getDescripcion()+"\n"+
+                        "Fecha registro: ".toUpperCase()+articulo.getFecha()+"\n"+
+                        "Estado: ".toUpperCase()+estado+"\n"+
+                        "Descripcion: ".toUpperCase()+a.getDescripcion()+"\n"+
+                        "Docente: ".toUpperCase()+a.getDocente()+"\n";
             lista.add(asignacion);
         }
         return lista;
