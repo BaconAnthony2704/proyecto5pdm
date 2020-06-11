@@ -3,11 +3,8 @@ package com.example.grupo5_proyecto1.models;
 public class CatalogoLibros {
 
     private String isbn;
-    private String edicion;
-    private String editorial;
     private String titulo;
-    private String autor;
-    private String idioma;
+    private String descripcion;
 
     public CatalogoLibros (){
 
@@ -21,22 +18,6 @@ public class CatalogoLibros {
         this.isbn = isbn;
     }
 
-    public String getEdicion() {
-        return edicion;
-    }
-
-    public void setEdicion(String edicion) {
-        this.edicion = edicion;
-    }
-
-    public String getEditorial() {
-        return editorial;
-    }
-
-    public void setEditorial(String editorial) {
-        this.editorial = editorial;
-    }
-
     public String getTitulo() {
         return titulo;
     }
@@ -45,19 +26,11 @@ public class CatalogoLibros {
         this.titulo = titulo;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
-
-    public String getIdioma() {
-        return idioma;
-    }
-
-    public void setIdioma(String idioma) {
-        this.idioma = idioma;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }

@@ -12,7 +12,7 @@ import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.Autores;
 import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
-
+import com.example.grupo5_proyecto1.models.CatalogoLibros;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,14 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             "   primary key (CODTIPOARTICULO)" +
             ");";
 
-
+    //Alfredo
+    private String querycatalogoLibros ="create table LIBROS" +
+            "(" +
+            "   ISBN                  varchar(10) not null," +
+            "   TITULO                varchar(50),"+
+            "   DESCRIPCION           varchar(50)," +
+            "   primary key (ISBN)" +
+            ");";
     //Relacion asignacion - catalogoMotivoAsignacion
     private String relacionCatalogoMotivoAsignacion="create table CATALOGOMOTIVOASIGNACION" +
             "(" +
@@ -68,13 +75,31 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             "   primary key (CODIGOARTICULO)" +
             ");";
 
+    //ALfredo
+    //Relacion asignacion + catalogoLibros con Libros
+    private String relacionLibros="create table LIBROS" +
+            "(" +
+            "   ISBN                varchar(10) not null," +
+            "   EDICION             varchar(10)," +
+            "   EDITORIAL           TEXT," +
+            "   TITULO              TEXT," +
+            "   AUTOR               TEXT," +
+            "   IDIOMA              TEXT," +
+            "   ESTADO              INTEGER," +
+            "   primary key (ISBN)" +
+            ");";
+
+
     private static String TABLA_ASIGNACIONES="ASIGNACIONES";
     private static String TABLA_AUTORES="AUTORES";
     private static String TABLA_CATALOGO_ARTICULO="CATALOGOARTICULO";
+    //Alfredo
+    private static String TABLA_CATALOGO_LIBROS="CATALOGOLIBROS";
     //Tabla relacion
     private static String TABLA_CATALOGOMOTASIG="CATALOGOMOTIVOASIGNACION";
     private static String TABLA_ARTICULO="ARTICULO";
-
+    //Alfredo
+    private static String TABLA_LIBROS="LIBROS";
     //Columna relacion
     private static String[] columna_cat_mot_asignacion={"CODMOTIVOASGINACION","DESCRIPCION"};
     private static String[] columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
@@ -83,6 +108,10 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     private static String[] columna_autores={"CODIGOARTICULO","CORLN","NOOMBRE"};
     private static String[] columna_catalogo_articul={"CODTIPOARTICULO","DESCRIPCION"};
 
+    //Alfredo
+    private static String[] columna_libros={"ISBN", "EDICION","EDITORIAL", "TITULO", "AUTOR", "IDIOMA", "ESTADO"};
+
+    private static String[] columna_catalogo_libros={"ISBN","TITULO","DESCRIPCION"};
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -92,6 +121,10 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         //relacion con asignacion
         db.execSQL(relacionCatalogoMotivoAsignacion);
         db.execSQL(relacionArticulo);
+
+        //Alfredo
+        db.execSQL(querycatalogoLibros);
+        db.execSQL(relacionLibros);
 
     }
 
