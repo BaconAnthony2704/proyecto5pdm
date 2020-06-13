@@ -1,6 +1,7 @@
 package com.example.grupo5_proyecto1.asignacion.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -22,12 +23,23 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.grupo5_proyecto1.R;
 import com.example.grupo5_proyecto1.asignacion.fragment.datepicker_fecha.DatePickerFragment;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
 import com.example.grupo5_proyecto1.models.Articulo;
 import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
+import com.example.grupo5_proyecto1.services.MyProgressDialog;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,13 +51,17 @@ import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.VERSION
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CreateFragment extends Fragment {
+public class CreateFragment extends Fragment implements Response.Listener<JSONObject>,Response.ErrorListener{
     //columna_asignacion={"NODOCUMENTO","CODMOTIVOASGINACION","CODIGOARTICULO","DOCENTE","CODARTICULO","DESCRIPCION","FECHAASIGNACION"};
     Spinner spinner,spinner2;
     Toolbar toolbar;
     EditText txtDocente,txtdescripcion,txtfecha;
     SQLite_Helper helper;
     Button btnGuardar;
+    MyProgressDialog progreso;
+    List<Articulo> articulos;
+    RequestQueue request;
+    JsonObjectRequest jsonObjectRequest;
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -67,6 +83,8 @@ public class CreateFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle state) {
         super.onActivityCreated(state);
+        articulos=new ArrayList<>();
+        request= Volley.newRequestQueue(getContext());
         toolbar=(Toolbar)getView().findViewById(R.id.toolbar_crear_asignacion);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         txtDocente=(EditText) getView().findViewById(R.id.txtEditDocente);
@@ -82,19 +100,14 @@ public class CreateFragment extends Fragment {
                 }
             }
         });
+        cargarWebService();
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().finish();
             }
         });
-        ArrayAdapter<String>arrayAdapter=new ArrayAdapter<String>(
-                getContext(),
-                android.R.layout.simple_list_item_1,
-                obtenerListaArticulo()
-        );
-        spinner=(Spinner) getView().findViewById(R.id.spinner_articulo);
-        spinner.setAdapter(arrayAdapter);
+
         spinner2=(Spinner) getView().findViewById(R.id.spinner_motivo_asignacion);
         ArrayAdapter<String>arrayAdapterMotivo=new ArrayAdapter<>(
                 getContext(),
@@ -142,13 +155,59 @@ public class CreateFragment extends Fragment {
 
     private List<String> obtenerListaArticulo(){
         List<String> list=new ArrayList<>();
-        for(Articulo art:helper.obtenerArticulo()){
+        for(Articulo art:articulos){
             list.add(art.getCodigoArticulo());
         }
         return list;
     }
 
 
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        progreso.dismiss();
+        AlertDialog.Builder mensaje=new AlertDialog.Builder(getContext());
+        mensaje.setMessage("No hay articulos");
+    }
 
+    @Override
+    public void onResponse(JSONObject response) {
+        progreso.dismiss();
+        Articulo articulo=null;
+        try{
+            if(response.optJSONArray("articulos")!=null){
+                JSONArray json=response.optJSONArray("articulos");
+                for(int i=0;i<json.length();i++){
+                    articulo=new Articulo();
+                    JSONObject jsonObject=null;
+                    jsonObject=json.getJSONObject(i);
+                    articulo.setCodigoArticulo(jsonObject.optString("CODIGOARTICULO"));
+                    articulo.setCodTipoArticulo(jsonObject.optString("CODTIPOARTICULO"));
+                    articulo.setFecha(jsonObject.getString("FECHAREGISTRO"));
+                    articulo.setEstado(jsonObject.getInt("ESTADO"));
+                    articulos.add(articulo);
+                }
+                ArrayAdapter<String>arrayAdapter=new ArrayAdapter<String>(
+                        getContext(),
+                        android.R.layout.simple_list_item_1,
+                        obtenerListaArticulo()
+                );
+                spinner=(Spinner) getView().findViewById(R.id.spinner_articulo);
+                spinner.setAdapter(arrayAdapter);
 
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+            Toast.makeText(getContext(),"No se pudo establecer la conexion "+e,Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void cargarWebService(){
+        progreso=new MyProgressDialog(getContext());
+        progreso.show();
+        String ip=getString(R.string.ip);
+        String url=ip+"/ws/obtenerArticulos.php";
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+        request.add(jsonObjectRequest);
+    }
 }
