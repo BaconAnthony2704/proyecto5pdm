@@ -160,8 +160,17 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimaryDark"
-                android:text="Guardar"
+                android:text="Guardar Local"
                 android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btnWebServiceAsginacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="#4CAF50"
+                android:text="Guardar en servicio web"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </ScrollView>
 

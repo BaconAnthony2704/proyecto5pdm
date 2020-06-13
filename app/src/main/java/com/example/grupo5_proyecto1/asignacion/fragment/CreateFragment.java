@@ -60,8 +60,11 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
     Button btnGuardar;
     MyProgressDialog progreso;
     List<Articulo> articulos;
+    List<CatalogoMotivoAsignacion> catalogos;
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
+    RequestQueue request2;
+    JsonObjectRequest jsonObjectRequest2;
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -84,6 +87,8 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
     public void onActivityCreated(Bundle state) {
         super.onActivityCreated(state);
         articulos=new ArrayList<>();
+        catalogos=new ArrayList<>();
+        progreso=new MyProgressDialog(getContext());
         request= Volley.newRequestQueue(getContext());
         toolbar=(Toolbar)getView().findViewById(R.id.toolbar_crear_asignacion);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
@@ -100,7 +105,9 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 }
             }
         });
-        cargarWebService();
+
+        cargarWebServiceArticulo();
+        cargarWebServiceCatalogoMotivoAsignacion();
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,13 +115,13 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
             }
         });
 
-        spinner2=(Spinner) getView().findViewById(R.id.spinner_motivo_asignacion);
-        ArrayAdapter<String>arrayAdapterMotivo=new ArrayAdapter<>(
-                getContext(),
-                android.R.layout.simple_list_item_1,
-                obtenerListaMotivoAsignacion()
-        );
-        spinner2.setAdapter(arrayAdapterMotivo);
+//        spinner2=(Spinner) getView().findViewById(R.id.spinner_motivo_asignacion);
+//        ArrayAdapter<String>arrayAdapterMotivo=new ArrayAdapter<>(
+//                getContext(),
+//                android.R.layout.simple_list_item_1,
+//                obtenerListaMotivoAsignacion()
+//        );
+//        spinner2.setAdapter(arrayAdapterMotivo);
         btnGuardar=(Button) getView().findViewById(R.id.btnGuardarAsignacion);
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +154,10 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
 
     private List<String> obtenerListaMotivoAsignacion() {
         List<String>lista=new ArrayList<>();
-        for(CatalogoMotivoAsignacion catalogoMotivoAsignacion:helper.obtenerCatalogoMotivoAsignacion()){
+//        for(CatalogoMotivoAsignacion catalogoMotivoAsignacion:helper.obtenerCatalogoMotivoAsignacion()){
+//            lista.add(catalogoMotivoAsignacion.getDescripcion());
+//        }
+        for(CatalogoMotivoAsignacion catalogoMotivoAsignacion:catalogos){
             lista.add(catalogoMotivoAsignacion.getDescripcion());
         }
         return lista;
@@ -171,10 +181,12 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
 
     @Override
     public void onResponse(JSONObject response) {
-        progreso.dismiss();
+
         Articulo articulo=null;
+        CatalogoMotivoAsignacion catalogoMotivoAsignacion=null;
         try{
             if(response.optJSONArray("articulos")!=null){
+                progreso.dismiss();
                 JSONArray json=response.optJSONArray("articulos");
                 for(int i=0;i<json.length();i++){
                     articulo=new Articulo();
@@ -193,7 +205,29 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 );
                 spinner=(Spinner) getView().findViewById(R.id.spinner_articulo);
                 spinner.setAdapter(arrayAdapter);
+                //Catalogo motivo asignacion
 
+
+            }
+
+            if(response.optJSONArray("catmovasignacion")!=null){
+                progreso.dismiss();
+                JSONArray json2=response.optJSONArray("catmovasignacion");
+                for(int i=0;i<json2.length();i++){
+                    catalogoMotivoAsignacion=new CatalogoMotivoAsignacion();
+                    JSONObject jsonObject=null;
+                    jsonObject=json2.getJSONObject(i);
+                    catalogoMotivoAsignacion.setCodMotivoAsignacion(jsonObject.optInt("CODMOTIVOASGINACION"));
+                    catalogoMotivoAsignacion.setDescripcion(jsonObject.optString("DESCRIPCION"));
+                    catalogos.add(catalogoMotivoAsignacion);
+                }
+                spinner2=(Spinner) getView().findViewById(R.id.spinner_motivo_asignacion);
+                ArrayAdapter<String>arrayAdapterMotivo=new ArrayAdapter<>(
+                        getContext(),
+                        android.R.layout.simple_list_item_1,
+                        obtenerListaMotivoAsignacion()
+                );
+                spinner2.setAdapter(arrayAdapterMotivo);
             }
         }catch (JSONException e){
             e.printStackTrace();
@@ -202,11 +236,21 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
 
     }
 
-    private void cargarWebService(){
-        progreso=new MyProgressDialog(getContext());
+    private void cargarWebServiceArticulo(){
+
         progreso.show();
         String ip=getString(R.string.ip);
         String url=ip+"/ws/obtenerArticulos.php";
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+        request.add(jsonObjectRequest);
+
+
+
+    }
+    private void cargarWebServiceCatalogoMotivoAsignacion(){
+        progreso.show();
+        String ip=getString(R.string.ip);
+        String url=ip+"/ws/obtenerCatMovAsignaciones.php";
         jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
         request.add(jsonObjectRequest);
     }
