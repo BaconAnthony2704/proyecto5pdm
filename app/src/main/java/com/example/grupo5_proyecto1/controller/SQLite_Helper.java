@@ -164,7 +164,6 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         //private static String[] columna_cat_mot_asignacion={"CODMOTIVOASGINACION","DESCRIPCION"};
         //Categoria motivo asignacion
         final String[] VCatMoviAsignacion={"Prestamo","Alquiler","Pedido"};
-
         //Autores
         //columna_autores={"CODIGOARTICULO","CORLN","NOOMBRE"};
         final String[] VAutoresCodigoArticulo={"AA01","AA01","BB02","BB02","CC03"};
