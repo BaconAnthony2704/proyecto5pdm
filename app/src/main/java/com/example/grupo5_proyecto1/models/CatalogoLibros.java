@@ -4,7 +4,7 @@ public class CatalogoLibros {
 
     private String isbn;
     private String titulo;
-    private String descripcion;
+    private String descripcionlibro;
 
     public CatalogoLibros (){
 
@@ -26,11 +26,11 @@ public class CatalogoLibros {
         this.titulo = titulo;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getDescripcionlibro() {
+        return descripcionlibro;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescripcionlibro(String descripcionlibro) {
+        this.descripcionlibro = descripcionlibro;
     }
 }
