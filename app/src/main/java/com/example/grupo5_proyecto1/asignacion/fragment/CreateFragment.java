@@ -140,7 +140,7 @@ public class CreateFragment extends Fragment {
         return lista;
     }
 
-    private List<String> obtenerListaArticulo(){
+    private List<String> obtenerListaArticulo() {
         List<String> list=new ArrayList<>();
         for(Articulo art:helper.obtenerArticulo()){
             list.add(art.getCodigoArticulo());

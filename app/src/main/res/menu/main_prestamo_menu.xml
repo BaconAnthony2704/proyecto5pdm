@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_create"
+        android:title="Prestar"
+        android:icon="@drawable/ic_create"></item>
+
+    <item android:id="@+id/menu_devolver"
+        android:title="Devolver"
+        android:icon="@drawable/ic_group"></item>
+
+    <item android:id="@+id/menu_search"
+        android:title="Consultar"
+        android:icon="@drawable/ic_search"></item>
+
+
+
+</menu>

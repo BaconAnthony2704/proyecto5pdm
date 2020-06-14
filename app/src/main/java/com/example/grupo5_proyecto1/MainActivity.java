@@ -12,9 +12,7 @@ import android.widget.Toast;
 
 import com.example.grupo5_proyecto1.asignacion.AsignacionMainActivity;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
-
-import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.BASE_DATOS;
-import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.VERSION;
+import com.example.grupo5_proyecto1.prestamo.PrestamoActivity;
 
 public class MainActivity extends AppCompatActivity {
     ListView lista;
@@ -33,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent;
                 switch (position){
                     case 0:
+                        intent = new Intent(MainActivity.this, PrestamoActivity.class);
+                        startActivity(intent);
                         break;
                     case 1:
                         intent=new Intent(MainActivity.this, AsignacionMainActivity.class);
