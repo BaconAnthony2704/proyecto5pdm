@@ -57,14 +57,13 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
     Toolbar toolbar;
     EditText txtDocente,txtdescripcion,txtfecha;
     SQLite_Helper helper;
-    Button btnGuardar;
+    Button btnGuardar,btnGuardarService;
     MyProgressDialog progreso;
     List<Articulo> articulos;
     List<CatalogoMotivoAsignacion> catalogos;
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
-    RequestQueue request2;
-    JsonObjectRequest jsonObjectRequest2;
+    int idCatalogoMovAsignacion;
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
@@ -91,6 +90,7 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         progreso=new MyProgressDialog(getContext());
         request= Volley.newRequestQueue(getContext());
         toolbar=(Toolbar)getView().findViewById(R.id.toolbar_crear_asignacion);
+        btnGuardarService=(Button)getView().findViewById(R.id.btnWebServiceAsginacion);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         txtDocente=(EditText) getView().findViewById(R.id.txtEditDocente);
         txtdescripcion=(EditText) getView().findViewById(R.id.txtEditDescripcion);
@@ -134,6 +134,13 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 asignacion.setFechaAsignacion(txtfecha.getText().toString());
                 String progreso=helper.insertar(asignacion);
                 Toast.makeText(getView().getContext(),progreso,Toast.LENGTH_LONG).show();
+            }
+        });
+        btnGuardarService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cargarWebSerivceIdMotivoAsignacion(spinner2.getSelectedItem().toString());
+
             }
         });
 
@@ -207,7 +214,6 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 spinner.setAdapter(arrayAdapter);
                 //Catalogo motivo asignacion
 
-
             }
 
             if(response.optJSONArray("catmovasignacion")!=null){
@@ -229,6 +235,7 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 );
                 spinner2.setAdapter(arrayAdapterMotivo);
             }
+            progreso.dismiss();
         }catch (JSONException e){
             e.printStackTrace();
             Toast.makeText(getContext(),"No se pudo establecer la conexion "+e,Toast.LENGTH_LONG).show();
@@ -243,15 +250,66 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         String url=ip+"/ws/obtenerArticulos.php";
         jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
         request.add(jsonObjectRequest);
+    }
 
-
+    private void cargarWebSerivceIdMotivoAsignacion(String descripcion){
+        progreso.show();
+        String ip=getString(R.string.ip);
+        String url=ip+"/ws/obtenerIdCatMovAsignacion.php?DESCRIPCION="+descripcion;
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.optJSONArray("catmovasig") != null) {
+                        progreso.dismiss();
+                        JSONArray json3 = response.optJSONArray("catmovasig");
+                        JSONObject jsonObject = null;
+                        for (int i = 0; i < json3.length(); i++) {
+                            jsonObject = json3.getJSONObject(i);
+                            idCatalogoMovAsignacion = jsonObject.getInt("CODMOTIVOASGINACION");
+                        }
+                        Asignacion asignacion=new Asignacion();
+                        asignacion.setCodigoArticulo(spinner.getSelectedItem().toString());
+                        asignacion.setCodMotivoAsignacion(idCatalogoMovAsignacion);
+                        asignacion.setDocente(txtDocente.getText().toString());
+                        asignacion.setDescripcion(txtdescripcion.getText().toString());
+                        asignacion.setFechaAsignacion(txtfecha.getText().toString());
+                        cargarWebServiceIngresarAsginacion(asignacion);
+                        Toast.makeText(getContext(),"Guardado con exito",Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progreso.dismiss();
+            }
+        });
+        request.add(jsonObjectRequest);
 
     }
     private void cargarWebServiceCatalogoMotivoAsignacion(){
         progreso.show();
         String ip=getString(R.string.ip);
         String url=ip+"/ws/obtenerCatMovAsignaciones.php";
-        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, this, this);
         request.add(jsonObjectRequest);
     }
+
+    private void cargarWebServiceIngresarAsginacion(Asignacion asignacion){
+        try{
+            progreso.show();
+            String ip=getString(R.string.ip);
+            String url=ip+"/ws/insertarAsignacion.php?CODMOTIVOASGINACION="+asignacion.getCodMotivoAsignacion()+
+                    "&CODIGOARTICULO="+asignacion.getCodigoArticulo()+"&DOCENTE="+asignacion.getDocente()+
+                    "&DESCRIPCION="+asignacion.getDescripcion();
+            jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+            request.add(jsonObjectRequest);
+        }catch (Exception e){
+            Toast.makeText(getContext()," No se pudo enlazar con BD remota: "+e,Toast.LENGTH_LONG).show();
+        }
+    }
+
 }
