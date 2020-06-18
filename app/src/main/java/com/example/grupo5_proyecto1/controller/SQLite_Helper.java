@@ -12,8 +12,7 @@ import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.Autores;
 import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
-import com.example.grupo5_proyecto1.models.CatalogoLibros;
-import com.example.grupo5_proyecto1.models.Libros;
+
 import com.example.grupo5_proyecto1.models.Prestamos;
 
 //Alfredo
@@ -96,13 +95,12 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     private String crearTablaPrestamos = "create table PRESTAMOS" +
             "(" +
-            "   NODOCUMENTO          numeric(8,0) not null," +
+            "   NODOCUMENTO          INTEGER primary key AUTOINCREMENT not null," +
             "   CODIGOARTICULO       varchar(10)," +
             "   MATERIA              varchar(6)," +
             "   DOCENTE              varchar(30)," +
             "   ACTIVIDAD            varchar(15)," +
-            "   DURACION             varchar(10)," +
-            "   primary key (NODOCUMENTO)" +
+            "   DURACION             varchar(10)" +
             ");";
 
     private String crearTablaUnidadesAdmin = "create table UNIDADESADMIN" +
@@ -144,6 +142,8 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     //Alfredo
     private static String[] columna_detalle_libro={"CODIGOARTICULO", "ISBN","IDIOMA", "CODTIPOLIBRO", "TITULO"};
     private static String[] columna_catalogo_tipo_libro={"CODTIPOLIBRO","DESCRIPCION"};
+
+    private static  String [] columnas_prestamos= {"NODOCUMENTO","CODIGOARTICULO","MATERIA","DOCENTE", "ACTIVIDAD","DURACION"};
     //////////
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -451,6 +451,32 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
         this.cerrar();
         return articulos;
+    }
+
+    /**
+     * Metodo para obtener todos los prestamos de articulos.
+     * @return
+     */
+    public List<Prestamos> obtenerPrestamos () {
+        this.abrir();
+        List <Prestamos> lstPrestamos = new ArrayList();
+        Cursor cursor = this.getReadableDatabase().query("PRESTAMOS",columnas_prestamos,null,null,null,null,null);
+        Prestamos prestamo;
+        while (cursor.moveToNext()) {
+            prestamo = new Prestamos ();
+            prestamo.setNodocumento(cursor.getInt(0));
+            prestamo.setCodigoArticulo(cursor.getString(1));
+            prestamo.setMateria(cursor.getString(2));
+            prestamo.setDocente(cursor.getString(3));
+            prestamo.setActividad(cursor.getString(4));
+            prestamo.setDuracion(cursor.getString(5));
+
+            lstPrestamos.add(prestamo);
+
+        }
+        this.cerrar();
+        return lstPrestamos;
+
     }
 
 

@@ -63,11 +63,17 @@ public class CrearPrestamoFragment extends Fragment {
         //Inicializando los valores
         toolbar=getView().findViewById(R.id.toolbar_crear_prestamo);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
 
         txtActividad = getView().findViewById(R.id.txtActividad);
         txtDocente = getView().findViewById(R.id.txtDocente);
         txtDuracion = getView().findViewById(R.id.txtDuracion);
-        txtActividad = getView().findViewById(R.id.txtActividad);
+        txtMateria = getView().findViewById(R.id.txtMateria);
         spArticulo = getView().findViewById(R.id.spArticulo);
 
         btnGuardar = getView().findViewById(R.id.btnGuardarPrestamo);
@@ -85,6 +91,7 @@ public class CrearPrestamoFragment extends Fragment {
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Llego hasta aqui -->"   + txtActividad.getText() == null );
                 if (txtActividad.getText().toString().equals("") ||
                         txtDocente.getText().toString().equals("") ||
                         txtDuracion.getText().toString().equals("") ||
@@ -93,8 +100,16 @@ public class CrearPrestamoFragment extends Fragment {
                     Toast.makeText(getView().getContext(),"Debe completar todos los campos",Toast.LENGTH_SHORT);
                     return;
                 }
-                Log.i("Llegamos ","Hasta aqui");
-                Log.i("mensaje",txtActividad.getText().toString());
+               Prestamos prestamo = new Prestamos () ;
+                prestamo.setActividad(txtActividad.getText().toString());
+                prestamo.setDuracion(txtDuracion.getText().toString());
+                prestamo.setCodigoArticulo(spArticulo.getSelectedItem().toString());
+                prestamo.setDocente(txtDocente.getText().toString());
+                prestamo.setMateria(txtMateria.getText().toString());
+
+                String mensaje = helper.insertar(prestamo);
+
+                Toast.makeText(getView().getContext(),mensaje,Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -106,7 +121,7 @@ public class CrearPrestamoFragment extends Fragment {
     private List<String> obtenerListaArticuloDisponible() {
         List<String> list=new ArrayList<>();
         Log.i("mensaje", "Estamos en Obtener articulos");
-        for(Articulo art:helper.obtenerArticuloEstado(11)){
+        for(Articulo art:helper.obtenerArticuloEstado(1)){
             list.add(art.getCodigoArticulo());
         }
         return list;

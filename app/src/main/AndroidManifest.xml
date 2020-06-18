@@ -10,7 +10,8 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".prestamo.PrestamoActivity" />
+        <activity android:name=".prestamo.PrestamoActivity"
+                  android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".libro.LibroMainActivity" />
         <activity
             android:name=".asignacion.AsignacionMainActivity"

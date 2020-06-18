@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.example.grupo5_proyecto1.R;
 
+import com.example.grupo5_proyecto1.prestamo.fragment.ConsultaPrestamoFragment;
 import com.example.grupo5_proyecto1.prestamo.fragment.CrearPrestamoFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -22,7 +23,7 @@ public class PrestamoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prestamo);
-        mostrarFragmentSeleccionado(new CrearPrestamoFragment());
+        mostrarFragmentSeleccionado(new ConsultaPrestamoFragment());
 
         toolbar=(Toolbar) findViewById(R.id.toolbar_prestamo);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
@@ -40,16 +41,22 @@ public class PrestamoActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.menu_create:
                         mostrarFragmentSeleccionado(new CrearPrestamoFragment());
+                        break;
                     case R.id.menu_search:
-                        Toast.makeText(PrestamoActivity.this, "menu_search", Toast.LENGTH_SHORT).show();
+                        mostrarFragmentSeleccionado(new ConsultaPrestamoFragment());
                         break;
                     case R.id.menu_devolver:
-                        Toast.makeText(PrestamoActivity.this, "menu_devolver", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PrestamoActivity.this, "devolver", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 return true;
             }
         });
+
+
+
+
+
     }
 
     private void mostrarFragmentSeleccionado(Fragment fragment){

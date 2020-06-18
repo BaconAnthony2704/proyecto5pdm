@@ -58,4 +58,14 @@ public class Prestamos {
     public void setCodigoArticulo(String codigoArticulo) {
         this.codigoArticulo = codigoArticulo;
     }
+
+    @Override
+    public String toString() {
+        return
+                "No. documento=" + nodocumento + "\n" +
+                "Articulo='" + codigoArticulo + "\n" +
+                "Docente='" + Docente + "\n" +
+                "actividad='" + actividad + "\n" +
+                "duracion='" + duracion + "\n" ;
+    }
 }

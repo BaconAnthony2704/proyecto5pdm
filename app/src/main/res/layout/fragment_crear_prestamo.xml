@@ -21,6 +21,8 @@
                 android:layout_height="wrap_content"
                 android:background="?attr/colorPrimaryDark"
                 android:minHeight="?attr/actionBarSize"
+                android:scrollbarAlwaysDrawHorizontalTrack="false"
+                android:scrollbarAlwaysDrawVerticalTrack="false"
                 android:theme="?attr/actionBarTheme" />
 
             <LinearLayout
@@ -49,7 +51,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+
                 android:orientation="horizontal">
 
                 <TextView
@@ -76,7 +78,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+
                 android:orientation="horizontal">
 
                 <TextView
@@ -102,7 +104,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+
                 android:orientation="horizontal">
 
                 <TextView
@@ -128,7 +130,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+
                 android:orientation="horizontal">
 
                 <TextView
@@ -150,6 +152,8 @@
                     android:hint="Ingrese la Duracion" />
 
             </LinearLayout>
+
+
             <Button
                 android:id="@+id/btnGuardarPrestamo"
                 android:layout_width="match_parent"
@@ -157,7 +161,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@color/colorPrimaryDark"
-                android:text="Guardar"
+                android:text="Guardar Local"
                 android:textColor="@color/white" />
 
         </LinearLayout>
