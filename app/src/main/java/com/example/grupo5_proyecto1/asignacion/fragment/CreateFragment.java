@@ -35,6 +35,8 @@ import com.example.grupo5_proyecto1.controller.SQLite_Helper;
 import com.example.grupo5_proyecto1.models.Articulo;
 import com.example.grupo5_proyecto1.models.Asignacion;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
+import com.example.grupo5_proyecto1.models.CatalogoTipoLibro;
+import com.example.grupo5_proyecto1.models.DetalleLibro;
 import com.example.grupo5_proyecto1.services.MyProgressDialog;
 
 import org.json.JSONArray;
@@ -44,6 +46,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.ListResourceBundle;
 
 import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.BASE_DATOS;
 import static com.example.grupo5_proyecto1.Envirioment.GlobalEnvirioment.VERSION;
@@ -63,6 +66,10 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
     List<CatalogoMotivoAsignacion> catalogos;
     RequestQueue request;
     JsonObjectRequest jsonObjectRequest;
+    List <DetalleLibro> detallelibro;
+    List <CatalogoTipoLibro> catalogolibro;
+
+
     int idCatalogoMovAsignacion;
     @Override
     public void onAttach(Activity activity){
@@ -87,6 +94,10 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         super.onActivityCreated(state);
         articulos=new ArrayList<>();
         catalogos=new ArrayList<>();
+        //ALfredo
+        detallelibro=new ArrayList<>();
+        catalogolibro=new ArrayList<>();
+        ///////////
         progreso=new MyProgressDialog(getContext());
         request= Volley.newRequestQueue(getContext());
         toolbar=(Toolbar)getView().findViewById(R.id.toolbar_crear_asignacion);
@@ -169,16 +180,30 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         }
         return lista;
     }
+//Alfredo
+private List<String> obtenerCatalogoTipoLibro() {
+    List<String>lista=new ArrayList<>();
 
-    private List<String> obtenerListaArticulo() {
+    for(CatalogoTipoLibro catalogoTipoLibro:catalogolibro){
+        lista.add(catalogoTipoLibro.getDescripcion());
+    }
+    return lista;
+}
+    private List<String> obtenerListaArticulo(){
         List<String> list=new ArrayList<>();
         for(Articulo art:articulos){
             list.add(art.getCodigoArticulo());
         }
         return list;
     }
-
-
+//Alfredo
+private List<String> obtenerDetalleLibro(){
+    List<String> list=new ArrayList<>();
+    for(DetalleLibro lib: detallelibro){
+        list.add(lib.getCodigoArticulo());
+    }
+    return list;
+}
     @Override
     public void onErrorResponse(VolleyError error) {
         progreso.dismiss();
@@ -191,6 +216,8 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
 
         Articulo articulo=null;
         CatalogoMotivoAsignacion catalogoMotivoAsignacion=null;
+        DetalleLibro detallelib=null;
+        CatalogoTipoLibro catalogoTipoLib=null;
         try{
             if(response.optJSONArray("articulos")!=null){
                 progreso.dismiss();
@@ -235,6 +262,51 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
                 );
                 spinner2.setAdapter(arrayAdapterMotivo);
             }
+//Alfredo
+            if(response.optJSONArray("detallelib")!=null){
+                progreso.dismiss();
+                JSONArray json=response.optJSONArray("detallelib");
+                for(int i=0;i<json.length();i++){
+                    detallelib = new DetalleLibro();
+                    JSONObject jsonObject=null;
+                    jsonObject=json.getJSONObject(i);
+                    detallelib.setCodigoArticulo(jsonObject.optString("CODIGOARTICULO"));
+                    detallelib.setIsbn(jsonObject.optString("ISBN"));
+                    detallelib.setIdioma(jsonObject.optString("IDIOMA"));
+                    detallelib.setCodTipoLibro(jsonObject.getInt("CODTIPOLIBRO"));
+                    detallelib.setTitulo(jsonObject.getString("TITULO"));
+                    detallelibro.add(detallelib);
+                }
+                ArrayAdapter<String>arrayAdapter=new ArrayAdapter<String>(
+                        getContext(),
+                        android.R.layout.simple_list_item_1,
+                        obtenerDetalleLibro()
+                );
+                spinner=(Spinner) getView().findViewById(R.id.spinner_articulo);
+                spinner.setAdapter(arrayAdapter);
+
+            if(response.optJSONArray("catTipoLibro")!=null){
+                    progreso.dismiss();
+                    JSONArray json2=response.optJSONArray("catTipoLibro");
+                    for(int i=0;i<json2.length();i++){
+                        catalogoTipoLib=new  CatalogoTipoLibro();
+                        JSONObject jsonObject=null;
+                        jsonObject=json2.getJSONObject(i);
+                        catalogoTipoLib.setCodTipoLibro(jsonObject.optInt("CODTIPOLIBRO"));
+                        catalogoTipoLib.setDescripcion(jsonObject.optString("DESCRIPCION"));
+                        catalogolibro.add(catalogoTipoLib);
+                    }
+                    spinner2=(Spinner) getView().findViewById(R.id.spinner_motivo_asignacion);
+                    ArrayAdapter<String>arrayAdapterMotivo=new ArrayAdapter<>(
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            obtenerListaMotivoAsignacion()
+                    );
+                    spinner2.setAdapter(arrayAdapterMotivo);
+                }
+      ////////////
+
+            }
             progreso.dismiss();
         }catch (JSONException e){
             e.printStackTrace();
@@ -242,7 +314,24 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         }
 
     }
+    //Alfredo
+    private void cargarWebServiceDetalleLibro(){
 
+        progreso.show();
+        String ip=getString(R.string.ip);
+        String url=ip+"/ws/obtenerDetalleLibro.php";
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
+        request.add(jsonObjectRequest);
+    }
+
+    private void cargarWebServiceCatalogoTipoLibro(){
+        progreso.show();
+        String ip=getString(R.string.ip);
+        String url=ip+"/ws/obtenerCatTipoLibro.php";
+        jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, url, null, this, this);
+        request.add(jsonObjectRequest);
+    }
+    ///////////
     private void cargarWebServiceArticulo(){
 
         progreso.show();
@@ -250,6 +339,9 @@ public class CreateFragment extends Fragment implements Response.Listener<JSONOb
         String url=ip+"/ws/obtenerArticulos.php";
         jsonObjectRequest=new JsonObjectRequest(Request.Method.GET,url,null,this,this);
         request.add(jsonObjectRequest);
+
+
+
     }
 
     private void cargarWebSerivceIdMotivoAsignacion(String descripcion){
