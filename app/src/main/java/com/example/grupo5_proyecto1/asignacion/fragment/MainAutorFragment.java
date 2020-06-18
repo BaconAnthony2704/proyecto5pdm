@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 
 import com.example.grupo5_proyecto1.R;
+import com.example.grupo5_proyecto1.asignacion.gestionAutor.AgregarAutorFragment;
 import com.example.grupo5_proyecto1.asignacion.gestionAutor.ConsultarAutorFragment;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
 
@@ -77,6 +78,9 @@ public class MainAutorFragment extends Fragment {
                         break;
                     case 1:
                         mostrarFragmentSeleccionado(new ConsultarAutorFragment());
+                        break;
+                    case 2:
+                        mostrarFragmentSeleccionado(new AgregarAutorFragment());
                         break;
                 }
 
