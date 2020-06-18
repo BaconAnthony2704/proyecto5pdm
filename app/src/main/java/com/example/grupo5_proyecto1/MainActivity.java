@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
                         texto=helper.llenarBaseDatos();
                         Toast.makeText(getApplicationContext(),texto,Toast.LENGTH_LONG).show();
                         break;
+                    case 5:
+                        intent=new Intent(MainActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
                 }
             }
         });

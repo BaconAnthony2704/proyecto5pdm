@@ -7,6 +7,7 @@
         <item>Libro</item>
         <item>Equipo</item>
         <item>Llenar base de datos</item>
+        <item>Salir de sesion</item>
     </string-array>
     <string name="title_activity_asinacion_main">AsinacionMainActivity</string>
     <string name="title_home">Home</string>
