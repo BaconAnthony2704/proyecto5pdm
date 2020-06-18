@@ -9,6 +9,17 @@
         <item>Llenar base de datos</item>
         <item>Salir de sesion</item>
     </string-array>
+
+    <string-array name="main_autores">
+        <item>Mostrar autores</item>
+        <item>Consultar autor</item>
+        <item>Agregar autor</item>
+        <item>Editar autor</item>
+        <item>Eliminar autor</item>
+
+    </string-array>
+
+
     <string name="title_activity_asinacion_main">AsinacionMainActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
