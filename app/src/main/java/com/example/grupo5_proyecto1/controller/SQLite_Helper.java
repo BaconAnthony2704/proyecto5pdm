@@ -13,6 +13,7 @@ import com.example.grupo5_proyecto1.models.Autores;
 import com.example.grupo5_proyecto1.models.CatalogoArticulo;
 import com.example.grupo5_proyecto1.models.CatalogoMotivoAsignacion;
 
+import com.example.grupo5_proyecto1.models.Prestamos;
 
 //Alfredo
 import com.example.grupo5_proyecto1.models.CatalogoTipoLibro;
@@ -25,7 +26,7 @@ import java.util.List;
 
 
 public class SQLite_Helper extends SQLiteOpenHelper {
-    private static  final String BASE_DATOS="mantto_libreria.s3db";
+    private static  final String BASE_DATOS="mantto_libreria1.s3db";
     private static final int VERSION=1;
     public SQLite_Helper(Context context) {
         super(context, BASE_DATOS, null, VERSION);
@@ -59,7 +60,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     private String querycatalogoTipoLibro ="create table CATALOGOTIPOLIBRO" +
             "(" +
             "   CODIGOTIPOLIBRO                  INTEGER not null," +
-                        "   DESCRIPCION          varchar(50)," +
+            "   DESCRIPCION          varchar(50)," +
             "   primary key (CODIGOTIPOLIBRO)" +
             ");";
     //////////
@@ -91,7 +92,32 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
             "   primary key (CODIGOARTICULO)" +
             ");";
-//////////
+
+    private String crearTablaPrestamos = "create table PRESTAMOS" +
+            "(" +
+            "   NODOCUMENTO          INTEGER primary key AUTOINCREMENT not null," +
+            "   CODIGOARTICULO       varchar(10)," +
+            "   MATERIA              varchar(6)," +
+            "   DOCENTE              varchar(30)," +
+            "   ACTIVIDAD            varchar(15)," +
+            "   DURACION             varchar(10)" +
+            ");";
+
+    private String crearTablaUnidadesAdmin = "create table UNIDADESADMIN" +
+            "(" +
+            "   IDUNADMIN            numeric(8,0) not null," +
+            "   DESCRIPCION          varchar(20)," +
+            "   UBICACION            varchar(20)," +
+            "   primary key (IDUNADMIN)" +
+            ");";
+
+    private String crearTablaCatalogoEquipo = "create table CATALOGOEQUIPO" +
+            "(" +
+            "   CODTIPOEQUIPO        numeric(8,0) not null," +
+            "   DESCRIPCION          varchar(10)," +
+            "   primary key (CODTIPOEQUIPO)" +
+            ");";
+
 
     private static String TABLA_ASIGNACIONES="ASIGNACIONES";
     private static String TABLA_AUTORES="AUTORES";
@@ -116,6 +142,8 @@ public class SQLite_Helper extends SQLiteOpenHelper {
     //Alfredo
     private static String[] columna_detalle_libro={"CODIGOARTICULO", "ISBN","IDIOMA", "CODTIPOLIBRO", "TITULO"};
     private static String[] columna_catalogo_tipo_libro={"CODTIPOLIBRO","DESCRIPCION"};
+
+    private static  String [] columnas_prestamos= {"NODOCUMENTO","CODIGOARTICULO","MATERIA","DOCENTE", "ACTIVIDAD","DURACION"};
     //////////
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -127,6 +155,12 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         db.execSQL(relacionArticulo);
 
         //Alfredo
+
+
+        db.execSQL(crearTablaPrestamos);
+        db.execSQL(crearTablaUnidadesAdmin);
+        db.execSQL(crearTablaCatalogoEquipo);
+
         db.execSQL(querycatalogoTipoLibro);
         db.execSQL(relacionDetalleLibro);
         //////////
@@ -243,16 +277,16 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
             this.insertar(detalleLibro);
         }
-            CatalogoTipoLibro catalogolibros = new CatalogoTipoLibro();
-            for (int i = 0; i < 3; i++) {
-                catalogolibros.setCodTipoLibro(VCatalogoTipoLibrocodigoTipoLibro[i]);
-                catalogolibros.setDescripcion(VCatalogoTipoLibroDescripcion[i]);
-                this.insertar(catalogolibros);
-            }
-                this.cerrar();
-                return resultado = "Guardado correctamente";
-        //////////
+        CatalogoTipoLibro catalogolibros = new CatalogoTipoLibro();
+        for (int i = 0; i < 3; i++) {
+            catalogolibros.setCodTipoLibro(VCatalogoTipoLibrocodigoTipoLibro[i]);
+            catalogolibros.setDescripcion(VCatalogoTipoLibroDescripcion[i]);
+            this.insertar(catalogolibros);
         }
+        this.cerrar();
+        return resultado = "Guardado correctamente";
+        //////////
+    }
 
 
 
@@ -333,51 +367,51 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         return  regIngresado;
     }
 
-        //Alfredo
-        //private static String[] columna_detalle_libro={"CODIGOARTICULO", "ISBN","IDIOMA", "CODTIPOLIBRO", "TITULO"};
-            public String insertar(DetalleLibro detalleLibro){
-                String regIngresado="Registro ingresado No.";
-                long cont=0;
-                try{
-                    ContentValues contentValues=new ContentValues();
-                    contentValues.put(columna_detalle_libro[0], detalleLibro.getCodigoArticulo());
-                    contentValues.put(columna_detalle_libro[1], detalleLibro.getIsbn());
-                    contentValues.put(columna_detalle_libro[2], detalleLibro.getIdioma());
-                    contentValues.put(columna_detalle_libro[3], detalleLibro.getCodTipoLibro());
-                    contentValues.put(columna_detalle_libro[4], detalleLibro.getTitulo());
+    //Alfredo
+    //private static String[] columna_detalle_libro={"CODIGOARTICULO", "ISBN","IDIOMA", "CODTIPOLIBRO", "TITULO"};
+    public String insertar(DetalleLibro detalleLibro){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_detalle_libro[0], detalleLibro.getCodigoArticulo());
+            contentValues.put(columna_detalle_libro[1], detalleLibro.getIsbn());
+            contentValues.put(columna_detalle_libro[2], detalleLibro.getIdioma());
+            contentValues.put(columna_detalle_libro[3], detalleLibro.getCodTipoLibro());
+            contentValues.put(columna_detalle_libro[4], detalleLibro.getTitulo());
 
-                    cont=this.getWritableDatabase().insert(TABLA_DETALLELIBRO,null,contentValues);
-                    if(cont==-1 || cont==0){
-                        regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
-                    }else{
-                        regIngresado+=cont;
-                    }
-                }catch(SQLException e){
-                    return  "Fallo al insert registro";
-                }
-                return  regIngresado;
+            cont=this.getWritableDatabase().insert(TABLA_DETALLELIBRO,null,contentValues);
+            if(cont==-1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
             }
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
 
-            public String insertar(CatalogoTipoLibro catalogoTipoLibro){
-                String regIngresado="Registro ingresado No.";
-                long cont=0;
-                try{
-                    ContentValues contentValues=new ContentValues();
-                    contentValues.put(columna_catalogo_tipo_libro[0],catalogoTipoLibro.getCodTipoLibro());
-                    contentValues.put(columna_catalogo_tipo_libro[1],catalogoTipoLibro.getDescripcion());
+    public String insertar(CatalogoTipoLibro catalogoTipoLibro){
+        String regIngresado="Registro ingresado No.";
+        long cont=0;
+        try{
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_catalogo_tipo_libro[0],catalogoTipoLibro.getCodTipoLibro());
+            contentValues.put(columna_catalogo_tipo_libro[1],catalogoTipoLibro.getDescripcion());
 
-                    cont=this.getWritableDatabase().insert(TABLA_CATALOGO_TIPO_LIBRO,null,contentValues);
-                    if(cont==-1 || cont==0){
-                        regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
-                    }else{
-                        regIngresado+=cont;
-                    }
-                }catch(SQLException e){
-                    return  "Fallo al insert registro";
-                }
-                return  regIngresado;
+            cont=this.getWritableDatabase().insert(TABLA_CATALOGO_TIPO_LIBRO,null,contentValues);
+            if(cont==-1 || cont==0){
+                regIngresado="Error al insertar registro, Registro duplicado, verificar insersion";
+            }else{
+                regIngresado+=cont;
             }
-            //////////
+        }catch(SQLException e){
+            return  "Fallo al insert registro";
+        }
+        return  regIngresado;
+    }
+    //////////
 
     public List<Articulo> obtenerArticulo(){
         //columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
@@ -395,6 +429,57 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         this.cerrar();
         return articulos;
     }
+
+    /**
+     * Metodo para obtener todos los articulos en base a un estado
+     * @param estado
+     * @return
+     */
+    public List<Articulo> obtenerArticuloEstado(int estado){
+        //columna_articulo={"CODIGOARTICULO","CODTIPOARTICULO","FECHAREGISTRO","ESTADO"};
+        this.abrir();
+        List<Articulo>articulos=new ArrayList<>();
+        Cursor cursor=this.getReadableDatabase().query(TABLA_ARTICULO,columna_articulo,"ESTADO = " + estado, null,null,null,null);
+        while(cursor.moveToNext()){
+            Articulo articulo=new Articulo();
+            articulo.setCodigoArticulo(cursor.getString(0));
+            articulo.setCodTipoArticulo(cursor.getString(1));
+            articulo.setEstado(cursor.getInt(2));
+            articulo.setFecha(cursor.getString(3));
+            articulos.add(articulo);
+            System.out.println(articulo.getCodigoArticulo());
+        }
+        this.cerrar();
+        return articulos;
+    }
+
+    /**
+     * Metodo para obtener todos los prestamos de articulos.
+     * @return
+     */
+    public List<Prestamos> obtenerPrestamos () {
+        this.abrir();
+        List <Prestamos> lstPrestamos = new ArrayList();
+        Cursor cursor = this.getReadableDatabase().query("PRESTAMOS",columnas_prestamos,null,null,null,null,null);
+        Prestamos prestamo;
+        while (cursor.moveToNext()) {
+            prestamo = new Prestamos ();
+            prestamo.setNodocumento(cursor.getInt(0));
+            prestamo.setCodigoArticulo(cursor.getString(1));
+            prestamo.setMateria(cursor.getString(2));
+            prestamo.setDocente(cursor.getString(3));
+            prestamo.setActividad(cursor.getString(4));
+            prestamo.setDuracion(cursor.getString(5));
+
+            lstPrestamos.add(prestamo);
+
+        }
+        this.cerrar();
+        return lstPrestamos;
+
+    }
+
+
     public List<CatalogoMotivoAsignacion> obtenerCatalogoMotivoAsignacion(){
         this.abrir();
         List<CatalogoMotivoAsignacion>catalogoMotivoAsignacions=new ArrayList<>();
@@ -433,6 +518,47 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         return  regIngresado;
     }
 
+    /**
+     * Metodo para insertar un nuevo prestamo
+     * @param prestamo
+     * @return
+     */
+    public String insertar (Prestamos prestamo) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("MATERIA", prestamo.getMateria());
+        contentValues.put("DOCENTE", prestamo.getDocente());
+        contentValues.put("ACTIVIDAD", prestamo.getActividad());
+        contentValues.put("DURACION", prestamo.getDuracion());
+        contentValues.put("CODIGOARTICULO", prestamo.getCodigoArticulo());
+
+        try {
+            long cont = this.getWritableDatabase().insert("PRESTAMOS",null,contentValues);
+            if(cont==0){
+                return "Error al insertar registro, Registro duplicado, verificar insersion";
+            } else {
+                updateEstatusArticulo(prestamo.getCodigoArticulo() , 0);
+                return "Registro ingresado No." + cont;
+
+            }
+        } catch (SQLException e) {
+            return "Ha ocurrido un error al insertar el registro";
+        }
+    }
+
+    public String updateEstatusArticulo(String codarticulo, int estado) {
+
+
+        String[] id = {codarticulo};
+        ContentValues cv = new ContentValues();
+        cv.put("ESTADO", estado);
+
+        this.getWritableDatabase().update("ARTICULO", cv, "CODIGOARTICULO = ?", id);
+        return "Registro Actualizado Correctamente";
+
+    }
+
+
+
     public int obtenerIdCodMotivoAsignacion(String motivo){
         String consulta="SELECT "+columna_cat_mot_asignacion[0]+" FROM "+TABLA_CATALOGOMOTASIG;
         String[] id={motivo};
@@ -452,6 +578,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
         return valor;
     }
+
     public String obtenerMotivoAsignacion(int id){
         String[] idmotivo={String.valueOf(id)};
         String valor;
@@ -591,7 +718,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     }
 
-  
+
 
 }
 
