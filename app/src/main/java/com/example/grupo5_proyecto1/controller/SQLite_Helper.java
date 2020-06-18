@@ -533,10 +533,12 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
         try {
             long cont = this.getWritableDatabase().insert("PRESTAMOS",null,contentValues);
-            if(cont==1 || cont==0){
+            if(cont==0){
                 return "Error al insertar registro, Registro duplicado, verificar insersion";
             } else {
+                updateEstatusArticulo(prestamo.getCodigoArticulo() , 0);
                 return "Registro ingresado No." + cont;
+
             }
         } catch (SQLException e) {
             return "Ha ocurrido un error al insertar el registro";
@@ -550,7 +552,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
             ContentValues cv = new ContentValues();
             cv.put("ESTADO", estado);
 
-            this.getWritableDatabase().update("ARTICULO", cv, "CODARTICULO = ?", id);
+            this.getWritableDatabase().update("ARTICULO", cv, "CODIGOARTICULO = ?", id);
             return "Registro Actualizado Correctamente";
 
     }
@@ -576,6 +578,7 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
         return valor;
     }
+
     public String obtenerMotivoAsignacion(int id){
         String[] idmotivo={String.valueOf(id)};
         String valor;
