@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.grupo5_proyecto1">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,15 +15,22 @@
         <activity android:name=".prestamo.PrestamoActivity"
                   android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".libro.LibroMainActivity" />
-        <activity
-            android:name=".asignacion.AsignacionMainActivity"
-            android:windowSoftInputMode="adjustPan" />
+
         <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".asignacion.AsignacionMainActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".MainActivity">
+
         </activity>
     </application>
 

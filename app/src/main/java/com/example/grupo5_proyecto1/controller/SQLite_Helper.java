@@ -690,6 +690,32 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
     }
 
+    public Autores obtenerAutor(String corlin){
+        Autores autores=null;
+        try{
+            String[] id={corlin};
+            Cursor cursor=this.getReadableDatabase().query(TABLA_AUTORES,columna_autores,columna_autores[1]+"=?",id,null,null,null);
+            if(!cursor.moveToFirst()){
+                String valor="NO ENCONTRADO";
+                autores=new Autores();
+                autores.setCodigoArticulo(valor);
+                autores.setNombre(valor);
+                autores.setNombre(valor);
+            }else{
+                autores=new Autores();
+                autores.setCodigoArticulo(cursor.getString(0));
+                autores.setCorlin(cursor.getDouble(1));
+                autores.setNombre(cursor.getString(2));
+            }
+            return autores;
+
+        }catch (SQLException e){
+            return null;
+        }
+
+    }
+
+
 
 }
 

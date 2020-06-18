@@ -13,6 +13,7 @@ import android.view.View;
 import com.example.grupo5_proyecto1.R;
 import com.example.grupo5_proyecto1.asignacion.fragment.ConsultaFragment;
 import com.example.grupo5_proyecto1.asignacion.fragment.CreateFragment;
+import com.example.grupo5_proyecto1.asignacion.fragment.MainAutorFragment;
 import com.example.grupo5_proyecto1.asignacion.fragment.OpcionesFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -44,7 +45,8 @@ public class AsignacionMainActivity extends AppCompatActivity {
                     mostrarFragmentSeleccionado(new ConsultaFragment());
                 }
                 if(item.getItemId()==R.id.menu_configurar){
-                    mostrarFragmentSeleccionado(new OpcionesFragment());
+                    //mostrarFragmentSeleccionado(new OpcionesFragment());
+                    mostrarFragmentSeleccionado(new MainAutorFragment());
                 }
                 return true;
             }
@@ -54,5 +56,7 @@ public class AsignacionMainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container_asignacion,fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
+
+
     }
 }
