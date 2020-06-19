@@ -733,6 +733,26 @@ public class SQLite_Helper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean eliminarAutor(double corln){
+        try{
+            String[] id={String.valueOf(corln)};
+            Autores autores=this.obtenerAutor(String.valueOf(corln));
+            if(!autores.getNombre().equals("NO ENCONTRADO")){
+                this.getWritableDatabase().delete(TABLA_AUTORES,columna_autores[1]+"=?",id);
+                return true;
+            }else{
+                return false;
+            }
+
+
+
+        }catch (SQLException e){
+            return false;
+        }
+    }
+
+
+
 
 
 }

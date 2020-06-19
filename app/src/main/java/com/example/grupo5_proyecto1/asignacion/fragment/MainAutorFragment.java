@@ -20,6 +20,7 @@ import com.example.grupo5_proyecto1.R;
 import com.example.grupo5_proyecto1.asignacion.gestionAutor.AgregarAutorFragment;
 import com.example.grupo5_proyecto1.asignacion.gestionAutor.ConsultarAutorFragment;
 import com.example.grupo5_proyecto1.asignacion.gestionAutor.EditarAutorFragment;
+import com.example.grupo5_proyecto1.asignacion.gestionAutor.EliminarAutorFragment;
 import com.example.grupo5_proyecto1.controller.SQLite_Helper;
 
 import java.util.List;
@@ -85,6 +86,9 @@ public class MainAutorFragment extends Fragment {
                         break;
                     case 3:
                         mostrarFragmentSeleccionado(new EditarAutorFragment());
+                        break;
+                    case 4:
+                        mostrarFragmentSeleccionado(new EliminarAutorFragment());
                         break;
                 }
 
