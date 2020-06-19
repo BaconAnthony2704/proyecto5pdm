@@ -718,6 +718,21 @@ public class SQLite_Helper extends SQLiteOpenHelper {
 
     }
 
+    public boolean actualizarAutor(Autores autores){
+        // columna_autores={"CODIGOARTICULO","CORLN","NOOMBRE"};
+        try{
+            String[] id={String.valueOf(autores.getCorlin())};
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(columna_autores[0],autores.getCodigoArticulo());
+            contentValues.put(columna_autores[1],autores.getCorlin());
+            contentValues.put(columna_autores[2],autores.getNombre());
+            int valor=this.getWritableDatabase().update(TABLA_AUTORES,contentValues,columna_autores[1]+"=?",id);
+            return true;
+        }catch(SQLException e){
+            return false;
+        }
+    }
+
 
 
 }
